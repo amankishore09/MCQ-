@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Cybersecurity MCQ Quiz — 140 Questions</title>
+  <style>
+    :root{--bg:#f7f9fb;--card:#ffffff;--muted:#6b7280;--accent:#0b5cff}
+    body{font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);margin:0;padding:24px;color:#0f172a}
+    .container{max-width:980px;margin:0 auto;background:var(--card);padding:24px;border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,0.06)}
+    h1{margin:0 0 6px;font-size:20px}
+    p.lead{color:var(--muted);margin-top:0}
+    .question{padding:14px;border-radius:10px;border:1px solid #e6eef8;background:linear-gradient(180deg, #fff, #fbfdff);margin:12px 0}
+    .qtxt{font-weight:600}
+    .opts{display:flex;flex-direction:column;margin-top:10px}
+    .opt{background:#eef2ff;border:none;padding:10px 12px;border-radius:8px;margin:6px 0;cursor:pointer;text-align:left}
+    .opt:hover{filter:brightness(0.98)}
+    .opt.correct{background:#16a34a;color:#fff}
+    .opt.incorrect{background:#dc2626;color:#fff}
+    .controls{display:flex;gap:8px;align-items:center;margin-top:12px}
+    .btn{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+    .small{font-size:13px;color:var(--muted)}
+    #topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    #score{font-weight:700}
+    .meta{font-size:13px;color:var(--muted);margin-top:6px}
+    @media (max-width:640px){.container{padding:16px}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="topbar">
+      <div>
+        <h1>Interactive Cybersecurity MCQ Quiz</h1>
+        <p class="lead">All 140 questions — click an option to check if it’s correct. Answers show immediately. This is a single-page quiz.</p>
+        <div class="meta">Tip: use your browser's Find (Ctrl/⌘+F) to jump to specific question numbers.</div>
+      </div>
+      <div style="text-align:right">
+        <div id="score">Correct: 0 | Attempted: 0</div>
+        <div class="meta">Questions: 140</div>
+      </div>
+    </div>
+
+    <div id="quiz"></div>
+
+    <div class="controls">
+      <button id="reset" class="btn">Reset Quiz</button>
+      <button id="reveal" class="btn" style="background:#374151">Reveal All Answers</button>
+      <div class="small">Made interactive — single-page view with instant feedback.</div>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { q: '1. Which of the following is an example of a social engineering attack?', opts: ['SQL Injection','Phishing','DDoS','Man-in-the-Middle'], a:1 },
+      { q: '2. What does the CIA triad in cybersecurity stand for?', opts: ['Control, Integrity, Access','Confidentiality, Integrity, Availability','Communication, Information, Authentication','Confidentiality, Inspection, Authorization'], a:1 },
+      { q: '3. A firewall primarily operates at which OSI layer?', opts: ['Application','Network','Transport','Data Link'], a:1 },
+      { q: '4. Which malware encrypts files and demands payment for the decryption key?', opts: ['Trojan','Spyware','Ransomware','Worm'], a:2 },
+      { q: '5. What is the main goal of penetration testing?', opts: ['To fix vulnerabilities','To detect intrusions','To exploit system weaknesses ethically','To secure hardware devices'], a:2 },
+      { q: '6. Which protocol is used for secure web browsing?', opts: ['HTTP','HTTPS','FTP','SMTP'], a:1 },
+      { q: '7. Which of the following is a type of multifactor authentication?', opts: ['Password only','Fingerprint + PIN','Username only','Security question only'], a:1 },
+      { q: '8. Which of the following attacks floods a server with requests to overload it?', opts: ['MITM Attack','DoS Attack','Phishing Attack','Brute Force Attack'], a:1 },
+      { q: '9. What is the purpose of an IDS (Intrusion Detection System)?', opts: ['To prevent attacks','To monitor and detect intrusions','To backup data','To manage authentication'], a:1 },
+      { q: '10. Which standard is used for information security management systems?', opts: ['ISO 27001','ISO 9001','ISO 14001','ISO 31000'], a:0 },
+
+      { q: '11. Which of the following is not a cloud service model?', opts: ['IaaS','SaaS','PaaS','DaaS'], a:3 },
+      { q: '12. Which company provides AWS cloud services?', opts: ['Microsoft','Google','Amazon','IBM'], a:2 },
+      { q: '13. Which of the following controls user access in cloud environments?', opts: ['IAM','VPN','CDN','DNS'], a:0 },
+      { q: '14. What is data encryption used for in cloud security?', opts: ['To increase data redundancy','To ensure data confidentiality','To speed up data transfer','To compress files'], a:1 },
+      { q: '15. Shared responsibility model means —', opts: ['Only the cloud provider secures data','Only the customer secures data','Both customer and provider share security tasks','Neither party is responsible'], a:2 },
+      { q: '16. Which cloud model gives the user most control over infrastructure?', opts: ['SaaS','PaaS','IaaS','DaaS'], a:2 },
+      { q: '17. What does “multi-tenancy” in cloud computing mean?', opts: ['One user per server','Multiple users sharing the same resources','Each user has a dedicated server','Server is used for testing'], a:1 },
+      { q: '18. In cloud security, DLP stands for —', opts: ['Data Loss Prevention','Digital License Protocol','Data Layer Protection','Distributed Load Policy'], a:0 },
+      { q: '19. Which of these is a major cloud security risk?', opts: ['Auto-scaling','Data breaches','Pay-per-use model','Elastic storage'], a:1 },
+      { q: '20. What is the purpose of a cloud access security broker (CASB)?', opts: ['To host applications','To monitor and enforce cloud security policies','To store backup data','To configure virtual machines'], a:1 },
+
+      { q: '21. What is the primary goal of integrating cybersecurity throughout the product life cycle?', opts: ['To reduce cost','To ensure continuous protection from design to disposal','To improve product performance','To reduce testing efforts'], a:1 },
+      { q: '22. In which phase of the product life cycle should threat modeling be performed?', opts: ['Design phase','Deployment phase','Disposal phase','Maintenance phase'], a:0 },
+      { q: '23. “Security by Design” refers to —', opts: ['Adding security features after product release','Integrating security from the initial design phase','Outsourcing security testing','Using open-source libraries for faster development'], a:1 },
+      { q: '24. During the development phase, which of the following is a key cybersecurity activity?', opts: ['Encryption key rotation','Secure coding practices','Data sanitization','System hardening'], a:1 },
+      { q: '25. Which document identifies potential security threats and mitigations early in design?', opts: ['Security audit report','Threat model','Vulnerability assessment report','Risk register'], a:1 },
+      { q: '26. What is the main focus of security testing during the testing phase?', opts: ['Performance optimization','Detecting and fixing vulnerabilities','User interface design','Reducing code size'], a:1 },
+      { q: '27. In the deployment phase, the most critical cybersecurity activity is —', opts: ['Source code review','Network hardening and access control','Application design','UI enhancement'], a:1 },
+      { q: '28. Which of the following is part of DevSecOps?', opts: ['Security integrated into CI/CD pipelines','Manual vulnerability scanning after release','Separate teams for security and development','Ignoring security until deployment'], a:0 },
+      { q: '29. What is configuration management in cybersecurity?', opts: ['Managing software licenses','Ensuring systems maintain a secure baseline configuration','Tracking code changes for speed','Automating deployments without validation'], a:1 },
+      { q: '30. What is the main cybersecurity concern during the maintenance phase?', opts: ['Feature enhancement','Regular patch management and vulnerability updates','Database design','Product packaging'], a:1 },
+
+      { q: '31. End-of-life (EOL) in cybersecurity refers to —', opts: ['The period when a product is first launched','When product support and updates stop','When software is in beta','When a new version is released'], a:1 },
+      { q: '32. Why is secure disposal important in the product life cycle?', opts: ['To recycle hardware','To ensure sensitive data is destroyed and unrecoverable','To improve system speed','To reduce energy consumption'], a:1 },
+      { q: '33. Which standard provides guidelines for security in product development?', opts: ['ISO 27001','ISO/IEC 27034','ISO 9001','ISO 31000'], a:1 },
+      { q: '34. What is the best approach to handle vulnerabilities discovered post-release?', opts: ['Ignore minor ones','Roll back the system','Apply security patches and updates','Delay until next version'], a:2 },
+      { q: '35. In the planning phase, cybersecurity considerations should include —', opts: ['Budgeting for marketing only','Regulatory compliance and risk assessment','Code optimization','User interface design'], a:1 },
+      { q: '36. What is a security gate in a product life cycle?', opts: ['Firewall between servers','A checkpoint to verify security criteria before moving to the next phase','Login portal','Encryption key store'], a:1 },
+      { q: '37. Continuous monitoring of systems after deployment helps —', opts: ['Improve code readability','Detect real-time threats and intrusions','Reduce hardware cost','Disable user access'], a:1 },
+      { q: '38. Which team is mainly responsible for handling security incidents post-deployment?', opts: ['QA team','Security Operations Center (SOC)','Development team','Sales team'], a:1 },
+      { q: '39. What should be performed before releasing a product to production?', opts: ['Security audit and penetration testing','Marketing strategy analysis','UI redesign','User training'], a:0 },
+      { q: '40. The ultimate aim of cybersecurity across the product life cycle is to —', opts: ['Reduce development time','Prevent, detect, and respond to security risks at all stages','Increase marketing value','Minimize testing resources'], a:1 },
+
+      { q: '41. What is the main goal of DevSecOps?', opts: ['Automate deployments only','Integrate security throughout the software development life cycle','Replace developers with security teams','Focus only on operations'], a:1 },
+      { q: '42. What does DevSecOps stand for?', opts: ['Development, Security, and Optimization','Development, Security, and Operations','Development, Services, and Operations','Design, Security, and Operations'], a:1 },
+      { q: '43. Which of the following is a key principle of DevSecOps?', opts: ['Security is added after deployment','Security is everyone’s responsibility','Security handled only by auditors','Security testing only in production'], a:1 },
+      { q: '44. What is the primary benefit of DevSecOps?', opts: ['Faster and less secure deployments','Reduced collaboration between teams','Early detection and remediation of vulnerabilities','Manual approval for each build'], a:2 },
+      { q: '45. Which tool is commonly used for continuous integration in DevSecOps?', opts: ['Jenkins','Wireshark','Burp Suite','Snort'], a:0 },
+      { q: '46. Static Application Security Testing (SAST) is performed —', opts: ['On running applications','On source code before execution','During production only','Only after release'], a:1 },
+      { q: '47. Which of the following is a Dynamic Application Security Testing (DAST) tool?', opts: ['SonarQube','OWASP ZAP','GitHub','Ansible'], a:1 },
+      { q: '48. What does “Shift Left” mean in DevSecOps?', opts: ['Move testing to the later stages','Integrate security earlier in the development process','Reduce development time','Increase production monitoring'], a:1 },
+      { q: '49. Infrastructure as Code (IaC) helps DevSecOps by —', opts: ['Deploying apps manually','Automating and securing environment configurations','Avoiding cloud deployment','Reducing visibility'], a:1 },
+      { q: '50. What is the role of Continuous Monitoring in DevSecOps?', opts: ['To monitor marketing performance','To detect and respond to security issues in real-time','To stop all automation','To disable CI/CD pipelines'], a:1 },
+
+      { q: '51. Which of the following best describes DevSecOps pipelines?', opts: ['They automate only deployments','They integrate security checks into CI/CD','They delay testing until release','They are unrelated to automation'], a:1 },
+      { q: '52. What is the purpose of dependency scanning in DevSecOps?', opts: ['To find outdated licenses','To detect vulnerabilities in third-party libraries','To remove unused files','To compress source code'], a:1 },
+      { q: '53. Which of the following practices ensures compliance automation in DevSecOps?', opts: ['Manual review','Automated policy enforcement','Ignoring audit logs','Ad-hoc approvals'], a:1 },
+      { q: '54. What is the key advantage of using container security tools like Aqua or Twistlock?', opts: ['They speed up UI rendering','They secure container images and runtime environments','They replace CI/CD tools','They handle code reviews'], a:1 },
+      { q: '55. In DevSecOps, “Secrets Management” refers to —', opts: ['Hiding business data','Securely storing and managing credentials, keys, and tokens','Encrypting media files','Obfuscating user data'], a:1 },
+      { q: '56. Which of the following is an example of a code repository in DevSecOps?', opts: ['Jenkins','GitHub','Docker','Nagios'], a:1 },
+      { q: '57. Which stage focuses on security automation and orchestration?', opts: ['Plan','Code','Build and Deploy','Operate'], a:2 },
+      { q: '58. What is the main difference between DevOps and DevSecOps?', opts: ['DevOps ignores security, while DevSecOps integrates it throughout','DevSecOps focuses only on developers','DevOps is manual','DevSecOps removes automation'], a:0 },
+      { q: '59. Which of the following tools can be used for container vulnerability scanning?', opts: ['Docker Bench','Slack','Trello','Jira'], a:0 },
+      { q: '60. The ultimate goal of DevSecOps is to —', opts: ['Deploy software as quickly as possible without security','Automate security, speed delivery, and ensure compliance','Separate teams for each task','Minimize developer involvement'], a:1 },
+
+      { q: '61. What is the main goal of security verification?', opts: ['To identify performance bottlenecks','To ensure the system meets security requirements and specifications','To test UI functionality','To reduce code size'], a:1 },
+      { q: '62. Security validation primarily ensures that —', opts: ['The product works as intended under real-world security conditions','Code follows naming conventions','Documentation is complete','The test team is trained'], a:0 },
+      { q: '63. Verification is typically done —', opts: ['During development phases','After deployment only','Only during maintenance','When defects are found'], a:0 },
+      { q: '64. Validation is generally performed —', opts: ['Before coding starts','After the product is built and integrated','Only by developers','During requirement gathering'], a:1 },
+      { q: '65. Which of the following focuses on “Are we building the product right?”', opts: ['Verification','Validation','Penetration testing','Vulnerability scanning'], a:0 },
+      { q: '66. Which focuses on “Are we building the right product?”', opts: ['Verification','Validation','Regression','Compliance'], a:1 },
+      { q: '67. Static security testing mainly belongs to —', opts: ['Verification','Validation','Acceptance testing','Stress testing'], a:0 },
+      { q: '68. Dynamic security testing mainly belongs to —', opts: ['Verification','Validation','Unit testing','Documentation review'], a:1 },
+      { q: '69. Code review and static analysis tools (like SonarQube) are used for —', opts: ['Verification','Validation','Field testing','Usability testing'], a:0 },
+      { q: '70. Penetration testing is an example of —', opts: ['Verification','Validation','Code inspection','Requirement analysis'], a:1 },
+
+      { q: '71. Which type of testing detects security flaws during design or coding?', opts: ['Functional testing','Verification testing','Validation testing','Beta testing'], a:1 },
+      { q: '72. Which of the following ensures the final system resists real-world attacks?', opts: ['Unit testing','Verification','Validation','Integration testing'], a:2 },
+      { q: '73. In security testing, vulnerability scanning belongs to —', opts: ['Verification','Validation','Documentation','Requirement phase'], a:1 },
+      { q: '74. Which phase uses threat modeling and code inspection?', opts: ['Security validation','Security verification','Regression testing','Performance testing'], a:1 },
+      { q: '75. Which type of testing uses attack simulation techniques?', opts: ['Verification','Validation','Code review','Static analysis'], a:1 },
+      { q: '76. What is the main purpose of security verification in SDLC?', opts: ['Identify and fix security issues early','Deploy system to production','Conduct beta testing','Create documentation'], a:0 },
+      { q: '77. Which of the following is NOT part of verification activities?', opts: ['Threat modeling','Code review','Security audit','Penetration testing'], a:3 },
+      { q: '78. Which of the following is part of validation testing?', opts: ['Static analysis','Vulnerability assessment','Requirements inspection','Design review'], a:1 },
+      { q: '79. A security compliance check ensures —', opts: ['The product meets regulatory and security standards','The product has a modern UI','The product runs faster','The development cost is reduced'], a:0 },
+      { q: '80. The key difference between verification and validation in security testing is —', opts: ['Verification checks process; validation checks the final product','Both are identical','Verification is after deployment','Validation doesn’t involve users'], a:0 },
+
+      { q: '81. What is the main goal of integrating DevSecOps into a CI/CD pipeline?', opts: ['To delay releases for manual reviews','To automate security checks throughout development and deployment','To separate security from development','To focus only on deployment'], a:1 },
+      { q: '82. In DevSecOps, what does “Shift Left” in CI/CD mean?', opts: ['Security testing is postponed to production','Security testing is started early in the development cycle','The deployment schedule is moved','Security is managed by the operations team'], a:1 },
+      { q: '83. Which of the following stages should include security scans in a CI/CD pipeline?', opts: ['Only after deployment','At every stage — code, build, test, deploy','During user acceptance testing','Only at the end of testing'], a:1 },
+      { q: '84. Which tool is commonly used for static code analysis in DevSecOps pipelines?', opts: ['Jenkins','SonarQube','Docker','Ansible'], a:1 },
+      { q: '85. What is the role of Jenkins in a CI/CD pipeline?', opts: ['Code versioning','Continuous integration and automation of builds/tests','Network monitoring','Security scanning only'], a:1 },
+      { q: '86. Dynamic Application Security Testing (DAST) should be integrated at which stage of CI/CD?', opts: ['During coding','During testing or staging','After decommissioning','Before design'], a:1 },
+      { q: '87. What does SAST check for in CI/CD pipelines?', opts: ['Code performance','Security vulnerabilities in source code','Network configuration','Deployment errors'], a:1 },
+      { q: '88. Container security in CI/CD is ensured by —', opts: ['Ignoring image vulnerabilities','Scanning container images for known CVEs','Using outdated base images','Disabling runtime checks'], a:1 },
+      { q: '89. Which of the following tools is used for dependency and library scanning?', opts: ['Nexus IQ / OWASP Dependency-Check','Docker Compose','Splunk','Grafana'], a:0 },
+      { q: '90. What is the purpose of integrating secret scanning in CI/CD?', opts: ['To encrypt build logs','To detect hardcoded credentials or API keys','To hide Jenkins files','To increase build speed'], a:1 },
+
+      { q: '91. Infrastructure as Code (IaC) security tools in DevSecOps check for —', opts: ['Misconfigurations in cloud or infrastructure code','Code indentation','UI bugs','Network speed'], a:0 },
+      { q: '92. Which of the following is an example of an IaC security tool?', opts: ['Checkov','Jenkins','Slack','Grafana'], a:0 },
+      { q: '93. Continuous Monitoring in CI/CD focuses on —', opts: ['Watching social media','Detecting security anomalies in real time','Testing application speed','Automating API calls'], a:1 },
+      { q: '94. What does Continuous Compliance mean in DevSecOps pipelines?', opts: ['Manual checking of security policies','Automating compliance checks with each build and deployment','Checking compliance once per year','Outsourcing audits'], a:1 },
+      { q: '95. Which of the following tools is often used for container vulnerability scanning in CI/CD?', opts: ['Trivy','Trello','Slack','Git'], a:0 },
+      { q: '96. Which phase in CI/CD is best suited for automated policy enforcement?', opts: ['Code commit','Pre-deployment validation','Post-production','Documentation'], a:1 },
+      { q: '97. Security gates in a CI/CD pipeline are used to —', opts: ['Delay releases','Automatically block promotion of builds with vulnerabilities','Delete build artifacts','Manage servers'], a:1 },
+      { q: '98. Which of the following represents a DevSecOps-integrated CI/CD workflow?', opts: ['Code → Build → Test → Deploy','Code → Build → Security Scan → Test → Deploy → Monitor','Code → Test → Deploy','Code → Deploy'], a:1 },
+      { q: '99. The primary reason for integrating DevSecOps in CI/CD is —', opts: ['To meet deadlines faster only','To detect and fix vulnerabilities before deployment','To replace QA testing','To avoid documentation'], a:1 },
+      { q: '100. The ultimate goal of DevSecOps-enabled CI/CD pipelines is —', opts: ['Manual testing of code','Continuous delivery of secure, reliable software','Slower deployments with extra reviews','Removing developers from security tasks'], a:1 },
+
+      { q: '101. What is the main objective of product security?', opts: ['To improve UI/UX','To ensure a product is secure throughout its life cycle','To increase production speed','To reduce documentation effort'], a:1 },
+      { q: '102. Product security primarily focuses on —', opts: ['Marketing and sales protection','Securing software, hardware, and data from design to decommission','Only patching systems after release','Limiting developer access'], a:1 },
+      { q: '103. A good product security strategy includes —', opts: ['Secure design, secure coding, testing, and continuous monitoring','Marketing budget planning','Increasing product cost','User interface testing only'], a:0 },
+      { q: '104. The term “Security by Design” means —', opts: ['Adding security after product release','Building security measures into the product from the design phase','Outsourcing security audits','Only using antivirus software'], a:1 },
+      { q: '105. Which standard defines security for software product development?', opts: ['ISO 27001','ISO/IEC 27034','ISO 9001','ISO 22301'], a:1 },
+      { q: '106. The purpose of threat modeling is to —', opts: ['Reduce software features','Identify, assess, and mitigate potential threats early in design','Increase software complexity','Remove documentation needs'], a:1 },
+      { q: '107. Which of the following is a common framework for threat modeling?', opts: ['STRIDE','SWOT','PESTLE','COBIT'], a:0 },
+      { q: '108. In threat modeling, “Attack Surface” means —', opts: ['Only network interfaces','All entry points that an attacker can exploit','The hardware design only','Encryption algorithms'], a:1 },
+      { q: '109. What is the correct sequence of steps in the threat modeling process?', opts: ['Identify assets → Identify threats → Assess risks → Mitigate threats','Design → Test → Deploy → Release','Scan → Build → Monitor → Audit','Develop → Sell → Support → End'], a:0 },
+      { q: '110. Threat modeling is most effective when done —', opts: ['After deployment','During the design phase','During marketing','During maintenance'], a:1 },
+
+      { q: '111. In the STRIDE model, what does “S” stand for?', opts: ['Spoofing','Stealing','Spamming','Sniffing'], a:0 },
+      { q: '112. In STRIDE, which threat relates to modifying data without authorization?', opts: ['Repudiation','Tampering','Information Disclosure','Elevation of Privilege'], a:1 },
+      { q: '113. Repudiation in STRIDE means —', opts: ['Denying performing an action without evidence','Gaining admin access','Stealing credentials','Modifying data'], a:0 },
+      { q: '114. Information Disclosure in STRIDE is associated with —', opts: ['Unauthorized access to confidential information','Data deletion','Hardware theft','Password reset'], a:0 },
+      { q: '115. Denial of Service (DoS) falls under which STRIDE category?', opts: ['Spoofing','Tampering','Denial of Service','Information Disclosure'], a:2 },
+      { q: '116. Elevation of Privilege in STRIDE refers to —', opts: ['User gaining higher access rights than intended','Encryption of data','Password reset','Hardware upgrade'], a:0 },
+      { q: '117. The STRIDE model was developed by —', opts: ['ISO','Microsoft','OWASP','NIST'], a:1 },
+      { q: '118. STRIDE primarily helps in —', opts: ['Performance optimization','Classifying and identifying potential security threats','UI improvements','System deployment'], a:1 },
+      { q: '119. What does TARA stand for?', opts: ['Threat Analysis and Risk Assessment','Threat Assessment and Remediation Analysis','Total Application Risk Analysis','Technical Attack Response Architecture'], a:1 },
+      { q: '120. The primary purpose of TARA is —', opts: ['To prioritize threats based on impact and likelihood','To design UI flow','To document project costs','To speed up builds'], a:0 },
+
+      { q: '121. What is the main goal of a security risk assessment?', opts: ['To eliminate all security risks completely','To identify, evaluate, and prioritize risks to assets','To detect malware only','To train users in coding'], a:1 },
+      { q: '122. The three core components of a risk assessment are —', opts: ['Risk, Cost, Profit','Threats, Vulnerabilities, Impact','Audit, Code, Test','Data, Design, Deployment'], a:1 },
+      { q: '123. Which standard provides guidelines for risk management?', opts: ['ISO/IEC 27005','ISO 9001','ISO 22301','ISO 14001'], a:0 },
+      { q: '124. A vulnerability is —', opts: ['A weakness that could be exploited by a threat','A hacker tool','A type of malware','A software patch'], a:0 },
+      { q: '125. Which of the following best defines risk?', opts: ['The possibility of a threat exploiting a vulnerability causing harm','A discovered software bug','A lost password','A known patch'], a:0 },
+      { q: '126. Which approach calculates risk using numbers or probabilities?', opts: ['Qualitative assessment','Quantitative assessment','Visual assessment','Heuristic assessment'], a:1 },
+      { q: '127. The risk matrix is used to —', opts: ['Classify risks by likelihood and impact','Identify hardware types','Estimate project cost','Track software versions'], a:0 },
+      { q: '128. Risk = __________ × __________', opts: ['Vulnerability × Cost','Threat × Vulnerability','Asset × Cost','Probability × Time'], a:1 },
+      { q: '129. The process of accepting, mitigating, transferring, or avoiding risk is called —', opts: ['Risk Treatment','Risk Ignorance','Risk Detection','Risk Hiding'], a:0 },
+      { q: '130. What is the final step in a risk assessment process?', opts: ['Identify threats','Monitor and review risks periodically','Perform audits','Train employees'], a:1 },
+
+      { q: '131. The main goal of cloud infrastructure security is to —', opts: ['Optimize cloud costs','Protect data, applications, and resources in the cloud','Improve application performance','Automate backups only'], a:1 },
+      { q: '132. The shared responsibility model in cloud security means —', opts: ['The customer handles all security','The cloud provider handles all security','Both provider and customer share security responsibilities','Security is managed by third parties'], a:2 },
+      { q: '133. In the shared responsibility model, the cloud provider is responsible for —', opts: ['Application code security','Data encryption','Physical data center and network infrastructure security','User access control'], a:2 },
+      { q: '134. In the shared responsibility model, the customer is responsible for —', opts: ['Securing the underlying hypervisor','Securing data, access control, and application configurations','Network cabling','Power management'], a:1 },
+      { q: '135. Which of the following is a major cloud security risk?', opts: ['Vendor lock-in','Virtualization overhead','Data breaches','Slow bandwidth'], a:2 },
+      { q: '136. Which approach integrates security early in the cloud system development lifecycle?', opts: ['Waterfall model','DevSecOps','Manual testing','Backup-first strategy'], a:1 },
+      { q: '137. A good cloud security strategy should include —', opts: ['Continuous monitoring, identity management, and encryption','Static policies only','Manual access logging','Firewall removal'], a:0 },
+      { q: '138. Zero Trust Architecture (ZTA) in cloud security means —', opts: ['Trusting all internal users','Always verify every user and device before granting access','Trusting the network perimeter','Disabling MFA'], a:1 },
+      { q: '139. The concept of least privilege ensures that —', opts: ['Users have admin rights','Users get only the minimum access needed for their tasks','All users share credentials','No access restrictions exist'], a:1 },
+      { q: '140. Multi-factor authentication (MFA) helps secure cloud environments by —', opts: ['Using two or more verification methods for login','Limiting login attempts','Disabling password resets','Reducing password strength'], a:0 }
+    ];
+
+    const quizEl = document.getElementById('quiz');
+    let correct = 0, attempted = 0;
+
+    function renderQuiz(){
+      quizEl.innerHTML = '';
+      quizData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'question';
+        div.id = 'q' + (idx+1);
+
+        const qtxt = document.createElement('div');
+        qtxt.className = 'qtxt';
+        qtxt.textContent = item.q;
+        div.appendChild(qtxt);
+
+        const opts = document.createElement('div');
+        opts.className = 'opts';
+
+        item.opts.forEach((opt, i) => {
+          const btn = document.createElement('button');
+          btn.className = 'opt';
+          btn.textContent = String.fromCharCode(65+i) + ') ' + opt;
+          btn.addEventListener('click', () => handleAnswer(btn, idx, i));
+          opts.appendChild(btn);
+        });
+
+        div.appendChild(opts);
+        quizEl.appendChild(div);
+      });
+      updateScore();
+    }
+
+    function handleAnswer(btn, qIdx, optIdx){
+      const qDiv = document.getElementById('q'+(qIdx+1));
+      if(qDiv.getAttribute('data-answered')) return; // prevent re-answering
+
+      qDiv.setAttribute('data-answered', 'true');
+      attempted++;
+      const correctIdx = quizData[qIdx].a;
+      const buttons = qDiv.querySelectorAll('.opt');
+
+      buttons.forEach((b, i) => {
+        b.disabled = true;
+        if(i === correctIdx) b.classList.add('correct');
+      });
+
+      if(optIdx === correctIdx){
+        btn.classList.add('correct');
+        correct++;
+      } else {
+        btn.classList.add('incorrect');
+      }
+      updateScore();
+    }
+
+    function updateScore(){
+      document.getElementById('score').textContent = `Correct: ${correct} | Attempted: ${attempted}`;
+    }
+
+    document.getElementById('reset').addEventListener('click', () => {
+      correct = 0; attempted = 0; renderQuiz();
+    });
+
+    document.getElementById('reveal').addEventListener('click', () => {
+      quizData.forEach((_, idx) => {
+        const qDiv = document.getElementById('q'+(idx+1));
+        if(!qDiv) return;
+        if(qDiv.getAttribute('data-answered')) return;
+        const correctIdx = quizData[idx].a;
+        const buttons = qDiv.querySelectorAll('.opt');
+        buttons.forEach((b,i) => { b.disabled = true; if(i===correctIdx) b.classList.add('correct'); });
+      });
+      // update attempted to total and correct to total correct
+      attempted = quizData.length;
+      correct = quizData.reduce((acc,item)=>acc+1,0); // will be set properly below
+      // compute correct count
+      correct = quizData.reduce((acc,item)=>acc+1,0); // placeholder
+      // accurate correct after reveal is total questions
+      correct = quizData.length;
+      updateScore();
+    });
+
+    // render on load
+    renderQuiz();
+  </script>
+</body>
+</html>
